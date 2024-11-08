@@ -1,0 +1,7 @@
+{
+  "config_schema": {
+    "step_size": "float",
+    "dt": "float"
+  },
+  "service_name": "VertexPlanarSheet"
+}

@@ -1,0 +1,32 @@
+[
+  [
+    "delta",
+    "float"
+  ],
+  [
+    "notch",
+    "float"
+  ],
+  [
+    "surface_area",
+    "float"
+  ],
+  [
+    "neighbor_surface_area",
+    {
+      "_type": "map",
+      "_value": {
+        "_type": "surface_area"
+      }
+    }
+  ],
+  [
+    "neighborhood_surface_areas",
+    {
+      "_type": "map",
+      "_value": {
+        "_type": "neighbor_surface_area"
+      }
+    }
+  ]
+]

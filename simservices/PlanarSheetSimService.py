@@ -45,5 +45,5 @@ class PlanarSheetSimService(PySimService, abc.ABC):
         ]
 
     @abc.abstractmethod
-    def neighbor_surface_areas(self, _cell_id: int) -> Dict[int, float]:
+    def neighbor_surface_areas(self) -> Dict[int, Dict[int, float]]:
         raise NotImplemented

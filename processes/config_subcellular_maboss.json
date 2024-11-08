@@ -1,0 +1,9 @@
+{
+  "config_schema": {
+    "time_step": "float",
+    "time_tick": "float",
+    "discrete_time": "bool",
+    "seed": "integer"
+  },
+  "service_name": "MaBoSSDeltaNotch"
+}

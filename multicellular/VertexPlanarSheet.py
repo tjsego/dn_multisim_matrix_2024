@@ -31,6 +31,8 @@ class VertexPlanarSheet(PlanarSheetSimService):
         self._dt = dt
         self._show = show
         self._cell_type: Optional[tfvs.SurfaceType] = None
+        self._cell_id_map: Optional[Dict[int, int]] = None
+        self._cell_id_map_inv: Optional[Dict[int, int]] = None
 
     # PlanarSheetSimService interface
 
@@ -57,10 +59,10 @@ class VertexPlanarSheet(PlanarSheetSimService):
         ])
         return result
 
-    def neighbor_surface_areas(self, _cell_id: int) -> Dict[int, float]:
+    def _neighbor_surface_areas(self, _cell_id: int) -> Dict[int, float]:
         if not self._cell_type or _cell_id >= len(self._cell_type):
             return {}
-        sh = tfvs.SurfaceHandle(_cell_id)
+        sh = tfvs.SurfaceHandle(self._cell_id_map[_cell_id])
         result = {}
         vertices = [v for v in sh.vertices]
         vertices.append(vertices[0])
@@ -75,6 +77,13 @@ class VertexPlanarSheet(PlanarSheetSimService):
                     result[s.id] += dist
                 except KeyError:
                     result[s.id] = dist
+        return result
+
+    def neighbor_surface_areas(self) -> Dict[int, Dict[int, float]]:
+        result = {}
+        for sh in self._cell_type:
+            sh_id = self._cell_id_map_inv[sh.id]
+            result[sh_id] = self._neighbor_surface_areas(sh_id)
         return result
 
     # PySimService interface
@@ -115,6 +124,12 @@ class VertexPlanarSheet(PlanarSheetSimService):
         start_pos_y = (self.num_cells_y) * np.sqrt(3) / 2
         start_pos = tf.Universe.center - tf.FVector3(start_pos_x, start_pos_y, 0) * self.cell_radius
         tfvs.create_hex2d_mesh(self._cell_type, start_pos, self.num_cells_x, self.num_cells_y, self.cell_radius)
+
+        self._cell_id_map = {}
+        self._cell_id_map_inv = {}
+        for i, sh in enumerate(self._cell_type):
+            self._cell_id_map[i] = sh.id
+            self._cell_id_map_inv[sh.id] = i
 
         if tf.err_occurred():
             print(tf.err_get_all())

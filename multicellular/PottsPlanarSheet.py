@@ -4,7 +4,7 @@ from typing import Dict
 
 from cc3d.core.simservice.CC3DSimService import CC3DSimService
 from cc3d.core import PyCoreSpecs as pcs
-from cc3d.core.iterators import CellNeighborListFlex
+from cc3d.core.iterators import CellList, CellNeighborListFlex
 
 
 def core_specs(num_cells_x: int,
@@ -106,7 +106,7 @@ class PottsPlanarSheet(CC3DSimService, PlanarSheetSimService):
         ])
         return result
 
-    def neighbor_surface_areas(self, _cell_id: int) -> Dict[int, float]:
+    def _neighbor_surface_areas(self, _cell_id: int) -> Dict[int, float]:
         sim = PottsPlanarSheet._get_simulator()
         cinv = PottsPlanarSheet._get_cell_inventory()
         result = {}
@@ -124,6 +124,16 @@ class PottsPlanarSheet(CC3DSimService, PlanarSheetSimService):
         for nbs, csa in CellNeighborListFlex(neighbor_tracker_plugin, cell):
             if nbs:
                 result[nbs.id] = csa
+        return result
+
+    def neighbor_surface_areas(self) -> Dict[int, Dict[int, float]]:
+        result = {}
+        sim = PottsPlanarSheet._get_simulator()
+        cinv = PottsPlanarSheet._get_cell_inventory()
+        if cinv is None:
+            return result
+        for cell in CellList(cinv):
+            result[cell.id] = self._neighbor_surface_areas(cell.id)
         return result
 
 
