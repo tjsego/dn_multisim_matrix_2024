@@ -25,3 +25,6 @@ def register_types(core):
     with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'type_info.json'), 'r') as f:
         for d in json.load(f):
             core.register(*d)
+
+    register_processes(core)
+    return core
