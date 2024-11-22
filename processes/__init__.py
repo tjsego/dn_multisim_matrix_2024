@@ -6,18 +6,20 @@ from .MaBoSSDeltaNotchProcess import MaBoSSDeltaNotchProcess
 from .PottsPlanarProcess import PottsPlanarProcess
 from .RoadRunnerDeltaNotchProcess import RoadRunnerDeltaNotchProcess
 from .VertexPlanarProcess import VertexPlanarProcess
+from .cell_connector import CellConnector
 
 __processes__ = [
     CenterPlanarProcess,
     MaBoSSDeltaNotchProcess,
     PottsPlanarProcess,
     RoadRunnerDeltaNotchProcess,
-    VertexPlanarProcess
+    VertexPlanarProcess,
+    CellConnector,
 ]
 
 
 def register_processes(core):
-    [core.register(p.__name__, p) for p in __processes__]
+    [core.register_process(p.__name__, p) for p in __processes__]
     return core
 
 

@@ -6,12 +6,12 @@
   },
   "access_methods": {
     "inputs": {
-      "neighbor_surface_areas": "neighbor_surface_areas"
+      "neighborhood_surface_areas": "neighbor_surface_areas"
     },
     "outputs": {}
   },
   "input_schema": {
-    "neighbor_surface_areas": "neighborhood_surface_areas"
+    "neighborhood_surface_areas": "neighborhood_surface_areas"
   },
   "output_schema": {}
 }
