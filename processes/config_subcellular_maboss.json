@@ -2,7 +2,7 @@
   "config_schema": {
     "time_step": "float",
     "time_tick": "float",
-    "discrete_time": "bool",
+    "discrete_time": "boolean",
     "seed": "integer"
   },
   "service_name": "MaBoSSDeltaNotch"

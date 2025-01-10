@@ -11,3 +11,4 @@ class PottsPlanarProcess(MulticellularPlanarProcess):
 
     config_schema = config_schema_generator(config_schema)
     service_name = config_data['service_name']
+

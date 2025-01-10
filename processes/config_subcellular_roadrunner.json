@@ -2,7 +2,7 @@
   "config_schema": {
     "step_size": "float",
     "num_steps": "integer",
-    "stochastic": "bool",
+    "stochastic": "boolean",
     "seed": "integer"
   },
   "service_name": "RoadRunnerDeltaNotch"

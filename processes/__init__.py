@@ -1,6 +1,14 @@
 import json
 import os
 
+# DO NOT REMOVE THESE SEEMINGLY UNUSED IMPORTS!
+import multicellular.CenterPlanarSheetFactory
+import multicellular.VertexPlanarSheetFactory
+import multicellular.PottsPlanarSheetFactory
+import subcellular.MaBoSSDeltaNotchFactory
+import subcellular.RoadRunnerDeltaNotchFactory
+
+
 from .CenterPlanarProcess import CenterPlanarProcess
 from .MaBoSSDeltaNotchProcess import MaBoSSDeltaNotchProcess
 from .PottsPlanarProcess import PottsPlanarProcess
