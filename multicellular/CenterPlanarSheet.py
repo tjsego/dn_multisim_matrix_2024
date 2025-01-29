@@ -75,15 +75,20 @@ class CenterPlanarSheet(PlanarSheetSimService):
         return result
 
     def _neighbor_surface_areas(self, _cell_id: int) -> Dict[int, float]:
-        if not self._cell_type or _cell_id >= len(self._cell_type):
+        if not self._cell_type or _cell_id >= len(tf.Universe.particles):
             return {}
         ph = tf.ParticleHandle(_cell_id)
+        if not ph:
+            return {}
         cell_diameter = ph.radius * 2
         return {nh.id: neighbor_area(cell_diameter, ph.relativePosition(nh.position).length()) for nh in
                 ph.neighbors(distance=neighbor_cutoff_cd * cell_diameter - ph.radius)}
 
     def neighbor_surface_areas(self) -> Dict[int, Dict[int, float]]:
-        return {ph.id: self._neighbor_surface_areas(ph.id) for ph in self._cell_type}
+        return {ph.id: self._neighbor_surface_areas(ph.id) for ph in tf.Universe.particles}
+
+    def num_cells(self) -> int:
+        return len(tf.Universe.particles)
 
     # PySimService interface
 
@@ -94,11 +99,13 @@ class CenterPlanarSheet(PlanarSheetSimService):
 
         # Initialize the simulation
 
-        min_dim = min(self.num_cells_x, self.num_cells_y) * np.sqrt(3) * self.cell_radius
+        min_dim = min(self.num_cells_x, self.num_cells_y) * np.sqrt(3) * self.cell_radius * 2
         min_cells = 3
         len2cells = min_dim / min_cells
 
-        dim = [self.num_cells_x * self.cell_radius, self.num_cells_y * np.sqrt(3) * self.cell_radius, len2cells]
+        dim = [(self.num_cells_x + 2) * self.cell_radius,
+               (self.num_cells_y + 1) * np.sqrt(3) * self.cell_radius,
+               len2cells]
 
         tf.init(windowless=not self._show,
                 dim=dim,
@@ -134,7 +141,7 @@ class CenterPlanarSheet(PlanarSheetSimService):
 
         # Initialize the population
 
-        uc = tf.lattice.hex2d(0.99, self._cell_type)
+        uc = tf.lattice.hex2d(self._cell_type.radius, self._cell_type)
         n = [self.num_cells_x, self.num_cells_y, 1]
         cell_half_size = (uc.a1 + uc.a2 + uc.a3) / 2
         extents = n[0] * uc.a1 + n[1] * uc.a2 + n[2] * uc.a3

@@ -15,12 +15,13 @@ def run_composites(core):
     # TODO -- maka this work:
     # subcellular_processes = core.query("subcellular")  # TODO -- how do we get the list of possible subcellular processes?
     # multicellular_processes = core.query("multicellular")
+    # TODO -- consider making subcellular simulators typical processes; startup for potentially 100s of services will be expensive without adding much value
     num_cells_x = 10
     num_cells_y = 10
-    cell_radius = 1
-    n_initial_cells = 10
-    step_size = 1.0 # time of one step in process bigraph engine
-    dt = 1.0        # the period of time step according to tissue forge
+    cell_radius = 5
+    n_initial_cells = num_cells_x * num_cells_y
+    step_size = 1.0  # time of one step in process bigraph engine
+    dt = 1.0         # the period of time step according to tissue forge
     assert step_size >= dt, "The time step of the process bigraph engine must be greater than or equal to the time step of tissue forge"
 
     multicellular_startup_settings = {
