@@ -74,18 +74,18 @@ class CenterPlanarSheet(PlanarSheetSimService):
         ])
         return result
 
-    def _neighbor_surface_areas(self, _cell_id: int) -> Dict[int, float]:
+    def _neighbor_surface_areas(self, _cell_id: int) -> Dict[str, float]:
         if not self._cell_type or _cell_id >= len(tf.Universe.particles):
             return {}
         ph = tf.ParticleHandle(_cell_id)
         if not ph:
             return {}
         cell_diameter = ph.radius * 2
-        return {nh.id: neighbor_area(cell_diameter, ph.relativePosition(nh.position).length()) for nh in
+        return {str(nh.id): neighbor_area(cell_diameter, ph.relativePosition(nh.position).length()) for nh in
                 ph.neighbors(distance=neighbor_cutoff_cd * cell_diameter - ph.radius)}
 
-    def neighbor_surface_areas(self) -> Dict[int, Dict[int, float]]:
-        return {ph.id: self._neighbor_surface_areas(ph.id) for ph in tf.Universe.particles}
+    def neighbor_surface_areas(self) -> Dict[str, Dict[int, float]]:
+        return {str(ph.id): self._neighbor_surface_areas(ph.id) for ph in tf.Universe.particles}
 
     def num_cells(self) -> int:
         return len(tf.Universe.particles)

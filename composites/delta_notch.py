@@ -1,11 +1,9 @@
 """
 Composites of Delta-Notch
 """
-# from bigraph_viz.dict_utils import deep_merge
 from process_bigraph import ProcessTypes, Composite
 from bigraph_schema.registry import deep_merge_copy
 from processes import register_types
-# from bigraph_viz import plot_bigraph, replace_regex_recursive
 import processes
 
 
@@ -16,12 +14,13 @@ def run_composites(core):
     # subcellular_processes = core.query("subcellular")  # TODO -- how do we get the list of possible subcellular processes?
     # multicellular_processes = core.query("multicellular")
     # TODO -- consider making subcellular simulators typical processes; startup for potentially 100s of services will be expensive without adding much value
-    num_cells_x = 10
-    num_cells_y = 10
+    num_cells_x = 4
+    num_cells_y = 4
     cell_radius = 5
     n_initial_cells = num_cells_x * num_cells_y
     step_size = 1.0  # time of one step in process bigraph engine
     dt = 1.0         # the period of time step according to tissue forge
+    interval = 10.   # the total time to run the simulation
     assert step_size >= dt, "The time step of the process bigraph engine must be greater than or equal to the time step of tissue forge"
 
     multicellular_startup_settings = {
@@ -67,6 +66,7 @@ def run_composites(core):
                 {"simservice_config": multicell_config}, multicell_settings)
             subcellular_config_merged = deep_merge_copy(
                 {"simservice_config": subcellular_config}, subcell_settings)
+
             
             # make the document
             document = {
@@ -140,10 +140,22 @@ def run_composites(core):
             #              filename=f'delta_notch_{multicell_address}_{subcell_address}.png')
 
             # make the composite
+            print(f"Building composite with {multicell_address} and {subcell_address}")
             sim = Composite(
                 config={"state": document},
                 core=core
             )
+
+            # run the simulation
+            print(f"Running composite with {multicell_address} and {subcell_address}")
+            sim.run(interval=interval)
+
+            # retrieve the results
+            results = sim.gather_results()
+
+            # print the results
+            print(f"Results: {results}")
+
             
 
 
