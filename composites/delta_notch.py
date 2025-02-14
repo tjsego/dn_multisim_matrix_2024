@@ -132,6 +132,23 @@ def run_composites(core):
                 "neighbor surface areas": {},
             }
 
+            # add an emitter
+            document["emitter"] = {
+                '_type': 'step',
+                'address': 'local:ram-emitter',
+                'config': {
+                    'emit': {
+                        'delta': 'delta',
+                        'notch': 'notch'
+                    }
+                },
+                'inputs': {
+                    # TODO -- make this more general
+                    'delta': ['cells', '0', 'delta store'],
+                    'notch': ['cells', '0', 'notch store']
+                },
+            }
+
             # # plot the composite
             # plot_bigraph(document,
             #              core=core,
@@ -154,11 +171,8 @@ def run_composites(core):
             results = sim.gather_results()
 
             # print the results
-            print(f"Results: {results}")
-
-            
-
-
+            # TODO -- is the emitter not wired to the right location
+            print(f"Results: {results[('emitter',)]}")
 
 
 

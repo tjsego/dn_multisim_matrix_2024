@@ -5,7 +5,7 @@ class CellConnector(Step):
     """
     Takes a map of cell neighborhoods from the multicell simulator,
     retrieves the shared surface area between each cell and its neighbor,
-    gets the delta values, and multiplie by the shared surface area,
+    gets the delta values, and multiply by the shared surface area,
     and sums these up to get total delta from neighbors.
     """
     config_schema = {}
