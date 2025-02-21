@@ -15,17 +15,41 @@ class CellConnector(Step):
 
     def inputs(self):
         return {
-            "connections": "any",
-            "cells": "any"
+            "connections": "neighborhood_surface_areas",
+            "cells": {
+                "_type": "map",
+                "_value": {
+                    "delta_store": "float",
+                    # "delta neighbors store": "float"
+                }
+            }
         }
 
     def outputs(self):
         return {
-            "cells": "any"
+            "cells": {  # "map[delta_neighbors_store:float]":
+                "_type": "map",
+                "_value": {
+                    # "delta store": "float",
+                    "delta_neighbors_store": "float"
+                }
+            }
         }
 
     def update(self, inputs):
         connections = inputs["connections"]
         cells = inputs["cells"]
 
-        return {}
+        cell_updates = {}
+        for cell_id, cell in cells.items():
+
+            delta = 0
+            # if cell_id not in connections:
+            #     continue
+            for neighbor_id, surface_area in connections[cell_id].items():
+                delta += cells[neighbor_id]["delta"] * surface_area
+            cell_updates[cell_id] = {"delta_neighbors": delta}
+
+        return {
+            "cells": cell_updates
+        }
