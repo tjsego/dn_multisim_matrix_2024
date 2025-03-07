@@ -69,41 +69,24 @@ def run_composites(core):
             subcellular_config_merged = deep_merge_copy(
                 {"simservice_config": subcellular_config}, subcell_settings)
 
-            
             # make the document
             document = {
-                "neighborhood_surface_areas_store": {
-                    f"{n}": {
-                        f"{m}": 0.0 for m in range(n_initial_cells) if m != n
-                    } for n in range(n_initial_cells)
-                },
+                # "neighborhood_surface_areas_store": {
+                #     f"{n}": {
+                #         f"{m}": 0.0 for m in range(n_initial_cells) if m != n
+                #     } for n in range(n_initial_cells)
+                # },
                 "tissue": {
                     "_type": "process",
                     "address": f"{multicell_address}",
                     "config": multicell_config_merged,
                     "inputs": {},
                     "outputs": {
-                        "neighborhood_surface_areas": ["neighborhood_surface_areas_store"],
+                        "neighborhood_surface_areas": ["neighborhood_surface_areas"],
                         # this is a map from each cell to ids of its neighbors and their common surface area
                     }
                 },
-                "cells": {  # TODO -- we need a cells schema so that when new cells are added, they automatically get a cell process
-                    # f"{n}": {   # TODO -- how do we make these cell ids match the ids from the tissue simulation?
-                    #     "cell_process": {
-                    #         "_type": "process",
-                    #         "address": f"{subcell_address}",
-                    #         "config": subcellular_config_merged,
-                    #         "inputs": {
-                    #             "delta_neighbors": ["delta_neighbors_store"]
-                    #             # this is a scalar value, sum of the delta values of the neighbors
-                    #         },
-                    #         "outputs": {
-                    #             "delta": ["delta_store"],  # this has to be called delta store for the connector to read it
-                    #             "notch": ["notch_store"]
-                    #         }
-                    #     }
-                    # } for n in range(n_initial_cells)
-                },
+                "cells": {},
                 "cell connector": {
                     "_type": "step",
                     "address": "local:CellConnector",
@@ -111,13 +94,15 @@ def run_composites(core):
                         "read_molecules": ["delta"],  # TODO -- this will tell the connector what molecule id to read
                     },
                     "inputs": {
-                        "connections": ["neighborhood_surface_areas_store"],  # this gives the connectivity and surface area
+                        "connections": ["neighborhood_surface_areas"],  # this gives the connectivity and surface area
                         "cells": ["cells"]  # it sees the cells so it can read their delta values
                     },
                     "outputs": {
                         "cells": ["cells"]  # this updates the total delta values seen by each cell
                     }
-                }, "neighbor surface areas": {}, "emitter": {
+                },
+                "neighbor_surface_areas": {},
+                "emitter": {
                     "_type": "step",
                     "address": "local:ram-emitter",
                     "config": {
@@ -128,8 +113,8 @@ def run_composites(core):
                     },
                     "inputs": {
                         # TODO -- make this more general
-                        "delta": ["cells", "0", "delta store"],
-                        "notch": ["cells", "0", "notch store"]
+                        "delta": ["cells", "0", "delta"],
+                        "notch": ["cells", "0", "notch"]
                     },
                 }
             }
@@ -143,25 +128,18 @@ def run_composites(core):
                             "address": default("string", f"{subcell_address}"),
                             "config": default("quote", subcellular_config_merged),
                             "inputs": default("tree[wires]", {
-                                "delta_neighbors": ["delta_neighbors_store"]
+                                "delta_neighbors": ["delta_neighbors"]
                             }),
                             "outputs": default("tree[wires]", {
                                 "outputs": {
-                                    "delta": ["delta_store"],  # this has to be called delta store for the connector to read it
-                                    "notch": ["notch_store"]
+                                    "delta": ["delta"],  # this has to be called delta store for the connector to read it
+                                    "notch": ["notch"]
                             }})
                         }
-                    }
+                    },
+
                 }
             }
-            # add an emitter
-
-            # # plot the composite
-            # plot_bigraph(document,
-            #              core=core,
-            #              remove_process_place_edges=True,
-            #              out_dir="out",
-            #              filename=f"delta_notch_{multicell_address}_{subcell_address}.png")
 
             # TODO -- set initial state
 
@@ -182,8 +160,7 @@ def run_composites(core):
 
             # print the results
             # TODO -- is the emitter not wired to the right location
-            print(f"Results: {results[("emitter",)]}")
-
+            print(f"Results: {results[('emitter',)]}")
 
 
 if __name__ == "__main__":

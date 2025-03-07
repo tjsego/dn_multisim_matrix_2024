@@ -35,6 +35,11 @@ class MulticellularPlanarProcess(SimServiceProcess):
 
     access_methods = deepcopy(access_methods_multicellular)
 
+    def initial_state(self):
+        # get the initial state from the service
+        # feed that state through the ports
+        return {}
+
     def inputs(self):
         return deepcopy(input_schema_multicellular)
 
