@@ -6,3 +6,9 @@ Dependencies can be installed with conda using setup/env.yml.
 Testing Tissue Forge installation can be performed by executing testing/argon.py. 
 
 Testing CC3D installation can be performed by executing testing/SortingDemo.py. 
+
+
+
+# INSTALL
+
+> conda env create -n delta -f setup/env.yml
