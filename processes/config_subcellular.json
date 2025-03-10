@@ -10,7 +10,7 @@
     }
   },
   "input_schema": {
-    "delta_neighbors": "delta"
+    "delta_neighbors": "delta_neighbors"
   },
   "output_schema": {
     "delta": "delta",
