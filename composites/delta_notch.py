@@ -3,7 +3,7 @@ Composites of Delta-Notch
 
 TODO -- need to pass in ids for the cells so that we can synchronize.
 """
-from process_bigraph import ProcessTypes, Composite, default
+from process_bigraph import ProcessTypes, Composite, default, gather_emitter_results
 from bigraph_schema.registry import deep_merge_copy
 from processes import register_types
 import processes
@@ -107,14 +107,16 @@ def run_composites(core):
                     "address": "local:ram-emitter",
                     "config": {
                         "emit": {
-                            "delta": "delta",
-                            "notch": "notch"
+                            'cells': 'map[delta:float|notch:float]'
+                            # "delta": "delta",
+                            # "notch": "notch"
                         }
                     },
                     "inputs": {
-                        # TODO -- make this more general
-                        "delta": ["cells", "0", "delta"],
-                        "notch": ["cells", "0", "notch"]
+                        'cells': ['cells']
+                        # # TODO -- make this more general
+                        # "delta": ["cells", "0", "delta"],
+                        # "notch": ["cells", "0", "notch"]
                     },
                 }
             }
@@ -151,12 +153,14 @@ def run_composites(core):
                 core=core
             )
 
+            # import ipdb; ipdb.set_trace()
+
             # run the simulation
             print(f"Running composite with {multicell_address} and {subcell_address}")
             sim.run(interval=interval)
 
             # retrieve the results
-            results = sim.gather_results()
+            results = gather_emitter_results(sim)
 
             # print the results
             # TODO -- is the emitter not wired to the right location
