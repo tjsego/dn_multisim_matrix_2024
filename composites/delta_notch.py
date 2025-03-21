@@ -95,10 +95,12 @@ def run_composites(core):
                     },
                     "inputs": {
                         "connections": ["neighborhood_surface_areas"],  # this gives the connectivity and surface area
-                        "cells": ["cells"]  # it sees the cells so it can read their delta values
+                        "cells": ['cells'],
+                        "cell_deltas": ["cells", '*', 'delta']  # it sees the cells so it can read their delta values
                     },
                     "outputs": {
-                        "cells": ["cells"]  # this updates the total delta values seen by each cell
+                        'cells': ['cells'],
+                        "cell_delta_neighbors": ["cells", '*', 'delta_neighbors']  # this updates the total delta values seen by each cell
                     }
                 },
                 "neighbor_surface_areas": {},

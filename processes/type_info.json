@@ -26,5 +26,16 @@
       "_value": "neighbor_surface_area",
       "_description": "neighbor_surface_area for all the cells"
     }
+  ],
+  [
+    "delta_notch_cell",
+    {
+      "_type": "map",
+      "_value": {
+        "delta": "float",
+        "notch": "float",
+        "delta_neighbors": "float"
+      }
+    }
   ]
 ]

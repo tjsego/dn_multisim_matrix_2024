@@ -16,12 +16,14 @@ class CellConnector(Step):
     def inputs(self):
         return {
             "connections": "neighborhood_surface_areas",
-            "cells": "map[delta:float]"
+            "cell_deltas": "map[float]",
+            'cells': 'map[delta_notch_cell]'
         }
 
     def outputs(self):
         return {
-            "cells": "map[delta_neighbors:float]"
+            "cell_delta_neighbors": "map[float]",
+            'cells': 'map[delta_notch_cell]'
             # "cells": {  # "map[delta_neighbors_store:float]":
             #     "_type": "map",
             #     "_value": {
@@ -32,17 +34,20 @@ class CellConnector(Step):
         }
 
     def update(self, inputs):
+        # TODO: compare connections input to the cells input and add
+        #   and remove cells that are different and report to output cells
+
         connections = inputs["connections"]
-        cells = inputs["cells"]
+        cell_deltas = inputs["cell_deltas"]
 
         cell_updates = {}
-        for cell_id, cell in cells.items():
-            delta = 0
+        for cell_id, cell_delta in cell_deltas.items():
+            neighbor_delta = 0
             if cell_id in connections:
                 for neighbor_id, surface_area in connections[cell_id].items():
-                    delta += cells[neighbor_id]["delta"] * surface_area
-            cell_updates[cell_id] = {"delta_neighbors": delta}
+                    neighbor_delta += cell_deltas[neighbor_id] * surface_area # ["delta"] * surface_area
+            cell_updates[cell_id] = neighbor_delta # {"delta_neighbors": delta}
 
         return {
-            "cells": cell_updates
+            "cell_delta_neighbors": cell_updates
         }
