@@ -38,7 +38,18 @@ class MulticellularPlanarProcess(SimServiceProcess):
     def initial_state(self):
         # get the initial state from the service
         # feed that state through the ports
-        return {}
+
+        outputs = {}
+        for key, method in self.access_methods['outputs'].items():
+            # skip disabled ports
+            if key in self.process_config['disable_ports']['outputs']:
+                continue
+
+            # retrieve the get method and call it
+            get_method = getattr(self.service, method)
+            outputs[key] = get_method()
+
+        return outputs
 
     def inputs(self):
         return deepcopy(input_schema_multicellular)

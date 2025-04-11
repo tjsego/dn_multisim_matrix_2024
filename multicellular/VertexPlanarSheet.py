@@ -107,12 +107,12 @@ class VertexPlanarSheet(PlanarSheetSimService):
                len2cells]
 
         tf.init(
-            # windowless=not self._show,
-                dim=dim,
-                bc={'x': tf.BOUNDARY_FREESLIP, 'y': tf.BOUNDARY_FREESLIP, 'z': tf.BOUNDARY_FREESLIP},
-                cells=[int(d / len2cells) + 1 for d in dim],
-                dt=self._dt,
-                cutoff=self.cell_radius)
+            windowless=not self._show,
+            dim=dim,
+            bc={'x': tf.BOUNDARY_FREESLIP, 'y': tf.BOUNDARY_FREESLIP, 'z': tf.BOUNDARY_FREESLIP},
+            cells=[int(d / len2cells) + 1 for d in dim],
+            dt=self._dt,
+            cutoff=self.cell_radius)
 
         # Create a cell type
 

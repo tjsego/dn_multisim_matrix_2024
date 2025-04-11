@@ -4,6 +4,7 @@ Composites of Delta-Notch
 TODO -- need to pass in ids for the cells so that we can synchronize.
 """
 from process_bigraph import ProcessTypes, Composite, default, gather_emitter_results
+from process_bigraph.emitter import emitter_from_wires
 from bigraph_schema.registry import deep_merge_copy
 from processes import register_types
 import processes
@@ -26,11 +27,11 @@ def run_composites(core):
     assert step_size >= dt, "The time step of the process bigraph engine must be greater than or equal to the time step of tissue forge"
 
     multicellular_startup_settings = {
+        # "local:PottsPlanarProcess": {},
         "local:CenterPlanarProcess": {
             "step_size": step_size,
             "dt": dt,
         },
-        "local:PottsPlanarProcess": {},
         "local:VertexPlanarProcess": {
             "step_size": step_size,
             "dt": dt
@@ -48,7 +49,7 @@ def run_composites(core):
             "num_steps": int(step_size/dt),
             "stochastic": False,
             "seed": 0
-        }
+        },
     }
 
     # general config settings
@@ -102,23 +103,32 @@ def run_composites(core):
                     }
                 },
                 "neighbor_surface_areas": {},
-                "emitter": {
-                    "_type": "step",
-                    "address": "local:ram-emitter",
-                    "config": {
-                        "emit": {
-                            'cells': 'map[delta:float|notch:float]'
-                            # "delta": "delta",
-                            # "notch": "notch"
-                        }
-                    },
-                    "inputs": {
-                        'cells': ['cells']
-                        # # TODO -- make this more general
-                        # "delta": ["cells", "0", "delta"],
-                        # "notch": ["cells", "0", "notch"]
-                    },
-                }
+                'emitter': emitter_from_wires({
+                    'cells': ['cells'],
+                    'neighborhood_surface_areas': ['neighborhood_surface_areas']}),
+
+
+
+
+                # "emitter": {
+                #     "_type": "step",
+                #     "address": "local:ram-emitter",
+                #     "config": {
+                #         "emit": {
+                #             'neighborhood_surface_areas': 
+                #             'cells': 'map[any]'
+                #             # 'cells': 'map[delta:float|notch:float]'
+                #             # "delta": "delta",
+                #             # "notch": "notch"
+                #         }
+                #     },
+                #     "inputs": {
+                #         'cells': ['cells']
+                #         # # TODO -- make this more general
+                #         # "delta": ["cells", "0", "delta"],
+                #         # "notch": ["cells", "0", "notch"]
+                #     },
+                # }
             }
 
             composition = {
@@ -153,7 +163,7 @@ def run_composites(core):
                 core=core
             )
 
-            # import ipdb; ipdb.set_trace()
+            import ipdb; ipdb.set_trace()
 
             # run the simulation
             print(f"Running composite with {multicell_address} and {subcell_address}")
