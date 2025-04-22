@@ -69,8 +69,8 @@ def launch_models(subcellular_method: str,
 def integrate_models(subcellulular_services: List[DeltaNotchSimService], multicellular_service: PlanarSheetSimService):
     # Update neighbor delta in each subcellular model
 
-    for i, ss in enumerate(subcellulular_services):
-        nbs_info = multicellular_service.neighbor_surface_areas(i)
+    for i, nbs_info in multicellular_service.neighbor_surface_areas().items():
+        ss = subcellulular_services[i]
         d_tot = 0
         nbs_tot = 0
         for j, nbs_area in nbs_info.items():

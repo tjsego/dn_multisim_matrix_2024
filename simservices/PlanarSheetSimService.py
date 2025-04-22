@@ -21,7 +21,7 @@ class PlanarSheetSimService(PySimService, abc.ABC):
         * description
         * type
         """
-        raise NotImplemented
+        raise NotImplementedError
 
     @abc.abstractclassmethod
     def init_kwarginfo(cls) -> List[Tuple[str, str, str, bool, Any]]:
@@ -34,7 +34,7 @@ class PlanarSheetSimService(PySimService, abc.ABC):
         * optional flag
         * default value if optional, otherwise None
         """
-        raise NotImplemented
+        raise NotImplementedError
 
     @classmethod
     def default_init_kwarginfo(cls) -> List[Tuple[str, str, str, bool, Any]]:
@@ -45,5 +45,9 @@ class PlanarSheetSimService(PySimService, abc.ABC):
         ]
 
     @abc.abstractmethod
-    def neighbor_surface_areas(self, _cell_id: int) -> Dict[int, float]:
-        raise NotImplemented
+    def neighbor_surface_areas(self) -> Dict[int, Dict[int, float]]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def num_cells(self) -> int:
+        raise NotImplementedError

@@ -31,6 +31,8 @@ class VertexPlanarSheet(PlanarSheetSimService):
         self._dt = dt
         self._show = show
         self._cell_type: Optional[tfvs.SurfaceType] = None
+        self._cell_id_map: Optional[Dict[int, int]] = None
+        self._cell_id_map_inv: Optional[Dict[int, int]] = None
 
     # PlanarSheetSimService interface
 
@@ -57,17 +59,17 @@ class VertexPlanarSheet(PlanarSheetSimService):
         ])
         return result
 
-    def neighbor_surface_areas(self, _cell_id: int) -> Dict[int, float]:
+    def _neighbor_surface_areas(self, _cell_id: int) -> Dict[int, float]:
         if not self._cell_type or _cell_id >= len(self._cell_type):
             return {}
-        sh = tfvs.SurfaceHandle(_cell_id)
+        sh = tfvs.SurfaceHandle(self._cell_id_map[_cell_id])
         result = {}
         vertices = [v for v in sh.vertices]
         vertices.append(vertices[0])
         for i in range(len(vertices) - 1):
             va: tfvs.VertexHandle = vertices[i]
             vb = vertices[i + 1]
-            dist = va.position.relativePosition(vb.position).length()
+            dist = va.position.relative_to(vb.position, tf.Universe.dim, False, False, False).length()
             for s in va.shared_surfaces(vb):
                 if s == sh:
                     continue
@@ -76,6 +78,16 @@ class VertexPlanarSheet(PlanarSheetSimService):
                 except KeyError:
                     result[s.id] = dist
         return result
+
+    def neighbor_surface_areas(self) -> Dict[int, Dict[int, float]]:
+        result = {}
+        for sh in self._cell_type:
+            sh_id = self._cell_id_map_inv[sh.id]
+            result[sh_id] = self._neighbor_surface_areas(sh_id)
+        return result
+
+    def num_cells(self) -> int:
+        return len(self._cell_type)
 
     # PySimService interface
 
@@ -86,38 +98,50 @@ class VertexPlanarSheet(PlanarSheetSimService):
 
         # Initialize the simulation
 
-        min_dim = min(self.num_cells_x * 2, self.num_cells_y * np.sqrt(3)) * self.cell_radius
+        min_dim = min(self.num_cells_x, self.num_cells_y) * np.sqrt(3) * self.cell_radius * 2
         min_cells = 3
         len2cells = min_dim / min_cells
 
-        dim = [(self.num_cells_x + 1) * 2 * self.cell_radius, (self.num_cells_y + 1) * np.sqrt(3) * self.cell_radius,
+        dim = [(self.num_cells_x + 3) * self.cell_radius,
+               (self.num_cells_y + 1) * np.sqrt(3) * self.cell_radius,
                len2cells]
 
-        tf.init(windowless=not self._show,
-                dim=dim,
-                bc={'x': tf.BOUNDARY_FREESLIP, 'y': tf.BOUNDARY_FREESLIP, 'z': tf.BOUNDARY_FREESLIP},
-                cells=[int(d / len2cells) + 1 for d in dim],
-                dt=self._dt,
-                cutoff=self.cell_radius)
+        tf.init(
+            windowless=not self._show,
+            dim=dim,
+            bc={'x': tf.BOUNDARY_FREESLIP, 'y': tf.BOUNDARY_FREESLIP, 'z': tf.BOUNDARY_FREESLIP},
+            cells=[int(d / len2cells) + 1 for d in dim],
+            dt=self._dt,
+            cutoff=self.cell_radius)
 
         # Create a cell type
 
         self._cell_type = tfvs.SurfaceType()
-        area_constraint = tfvs.SurfaceAreaConstraint(1.0, 1.5 * np.sqrt(3) * self.cell_radius * self.cell_radius)
-        area_constraint.thisown = 0
-        tfvs.bind.surface(area_constraint, self._cell_type)
 
         # Initialize the population
 
-        start_pos_x = (self.num_cells_x + 1) / 2
-        # Not sure why I need this factor of 1.5, but it seems to work
-        # start_pos_y = (self.num_cells_y + 3) * np.cos(np.pi / 3) * np.cos(np.pi / 6)
-        start_pos_y = (self.num_cells_y) * np.sqrt(3) / 2
+        start_pos_x = (self.num_cells_x) / 2
+        start_pos_y = (self.num_cells_y - 0.5) * np.sqrt(3) / 2
         start_pos = tf.Universe.center - tf.FVector3(start_pos_x, start_pos_y, 0) * self.cell_radius
         tfvs.create_hex2d_mesh(self._cell_type, start_pos, self.num_cells_x, self.num_cells_y, self.cell_radius)
 
+        self._cell_id_map = {}
+        self._cell_id_map_inv = {}
+        for i, sh in enumerate(self._cell_type):
+            self._cell_id_map[i] = sh.id
+            self._cell_id_map_inv[sh.id] = i
+
+        area_constraint = tfvs.SurfaceAreaConstraint(0.1, tfvs.SurfaceHandle(0).area)
+        area_constraint.thisown = 0
+        tfvs.bind.surface(area_constraint, self._cell_type)
+        perim_constraint = tfvs.PerimeterConstraint(1.0, tfvs.SurfaceHandle(0).perimeter)
+        perim_constraint.thisown = 0
+        tfvs.bind.surface(perim_constraint, self._cell_type)
+
         if tf.err_occurred():
             print(tf.err_get_all())
+
+        tf.show()
 
         return True
 

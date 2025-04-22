@@ -1,0 +1,30 @@
+[
+  [
+    "delta",
+    "float"
+  ],
+  [
+    "notch",
+    "float"
+  ],
+  [
+    "surface_area",
+    "float"
+  ],
+  [
+    "neighbor_surface_area",
+    {
+      "_inherit": "map",
+      "_value": "surface_area",
+      "_description": "Map of neighbors surface areas for one cell, from neighbor id to surface area (float)"
+    }
+  ],
+  [
+    "neighborhood_surface_areas",
+    {
+      "_inherit": "map",
+      "_value": "neighbor_surface_area",
+      "_description": "neighbor_surface_area for all the cells"
+    }
+  ]
+]

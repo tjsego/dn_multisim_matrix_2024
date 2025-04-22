@@ -167,5 +167,5 @@ class RoadRunnerDeltaNotch(DeltaNotchSimService, RoadRunnerSimService):
     def set_delta(self, _val):
         self.set_rr_val('N', _val)
 
-    def set_delta_neighbors(self, _d_tot: float, _num_nbs: int):
-        self.set_rr_val('Davg', _d_tot / _num_nbs if _num_nbs > 0 else 0.0)
+    def set_delta_neighbors(self, _d_avg: float):
+        self.set_rr_val('Davg', _d_avg)

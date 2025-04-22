@@ -1,0 +1,17 @@
+{
+  "config_schema": {
+    "num_cells_x": "integer",
+    "num_cells_y": "integer",
+    "cell_radius": "float"
+  },
+  "access_methods": {
+    "inputs": {},
+    "outputs": {
+      "neighborhood_surface_areas": "neighbor_surface_areas"
+    }
+  },
+  "input_schema": {},
+  "output_schema": {
+    "neighborhood_surface_areas": "neighborhood_surface_areas"
+  }
+}

@@ -45,5 +45,5 @@ class DeltaNotchSimService(PySimService, abc.ABC):
         raise NotImplemented
 
     @abc.abstractmethod
-    def set_delta_neighbors(self, _d_tot: float, _num_nbs: int):
+    def set_delta_neighbors(self, _d_avg: float):
         raise NotImplemented

@@ -4,7 +4,7 @@ from typing import Dict
 
 from cc3d.core.simservice.CC3DSimService import CC3DSimService
 from cc3d.core import PyCoreSpecs as pcs
-from cc3d.core.iterators import CellNeighborListFlex
+from cc3d.core.iterators import CellList, CellNeighborListFlex
 
 
 def core_specs(num_cells_x: int,
@@ -23,10 +23,10 @@ def core_specs(num_cells_x: int,
                       fluctuation_amplitude=10,
                       neighbor_order=2),
         pcs.CellTypePlugin('TypeA'),
-        # pcs.ContactPlugin(4,
-        #                   pcs.ContactEnergyParameter('Medium', 'TypeA', 5),
-        #                   pcs.ContactEnergyParameter('TypeA', 'TypeA', 5)),
-        # pcs.VolumePlugin(pcs.VolumeEnergyParameter('TypeA', area, 5)),
+        pcs.ContactPlugin(4,
+                          pcs.ContactEnergyParameter('Medium', 'TypeA', 5),
+                          pcs.ContactEnergyParameter('TypeA', 'TypeA', 5)),
+        pcs.VolumePlugin(pcs.VolumeEnergyParameter('TypeA', area, 5)),
         pcs.UniformInitializer(pcs.UniformInitializerRegion((0, 0, 0),
                                                             (dim_x, dim_y, 1),
                                                             width=cell_len,
@@ -42,6 +42,7 @@ DEF_OUTPUT_FILE_CORE_NAME = None
 
 
 class PottsPlanarSheet(CC3DSimService, PlanarSheetSimService):
+    """Maps internal and external cell IDs such that an external ID of 0 is the first cell"""
 
     def __init__(self,
                  num_cells_x: int,
@@ -70,14 +71,23 @@ class PottsPlanarSheet(CC3DSimService, PlanarSheetSimService):
         return pg.simulator
 
     @staticmethod
-    def _get_cell_inventory():
+    def _get_potts():
         sim = PottsPlanarSheet._get_simulator()
         if sim is None:
             return None
-        potts = sim.getPotts()
+        return sim.getPotts()
+
+    @staticmethod
+    def _get_cell_inventory():
+        potts = PottsPlanarSheet._get_potts()
         if potts is None:
             return None
         return potts.getCellInventory()
+
+    @staticmethod
+    def _get_neighbor_tracker_plugin():
+        from cc3d.cpp import CompuCell
+        return CompuCell.getNeighborTrackerPlugin()
 
     # PlanarSheetSimService interface
 
@@ -106,14 +116,13 @@ class PottsPlanarSheet(CC3DSimService, PlanarSheetSimService):
         ])
         return result
 
-    def neighbor_surface_areas(self, _cell_id: int) -> Dict[int, float]:
-        sim = PottsPlanarSheet._get_simulator()
+    def _neighbor_surface_areas(self, _cell_id: int) -> Dict[int, float]:
         cinv = PottsPlanarSheet._get_cell_inventory()
         result = {}
         if cinv is None:
             return result
 
-        neighbor_tracker_plugin = sim.pluginManager.getNeighborTrackerPlugin()
+        neighbor_tracker_plugin = PottsPlanarSheet._get_neighbor_tracker_plugin()
         if neighbor_tracker_plugin is None:
             return result
 
@@ -123,8 +132,23 @@ class PottsPlanarSheet(CC3DSimService, PlanarSheetSimService):
 
         for nbs, csa in CellNeighborListFlex(neighbor_tracker_plugin, cell):
             if nbs:
-                result[nbs.id] = csa
+                result[nbs.id - 1] = float(csa)
         return result
+
+    def neighbor_surface_areas(self) -> Dict[int, Dict[int, float]]:
+        result = {}
+        cinv = PottsPlanarSheet._get_cell_inventory()
+        if cinv is None:
+            return result
+        for cell in CellList(cinv):
+            result[cell.id - 1] = self._neighbor_surface_areas(cell.id)
+        return result
+
+    def num_cells(self) -> int:
+        potts = PottsPlanarSheet._get_potts()
+        if potts is None:
+            return 0
+        return potts.getNumCells()
 
 
 def test():
