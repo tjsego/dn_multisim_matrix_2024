@@ -8,10 +8,18 @@ class CellConnector(Step):
     gets the delta values, and multiply by the shared surface area,
     and sums these up to get total delta from neighbors.
     """
-    config_schema = {}
+    config_schema = {
+        'cells_count': 'integer',
+        'read_molecules': 'list[string]'}
 
-    def __init__(self, config, core=None):
-        super().__init__(config, core)
+    def initial_state(self):
+        cells = {
+            str(cell_id): {
+                'delta_neighbors': 0.0}
+            for cell_id in range(self.config['cells_count'])}
+
+        return cells
+
 
     def inputs(self):
         return {
@@ -22,18 +30,13 @@ class CellConnector(Step):
     def outputs(self):
         return {
             "cells": "map[delta_neighbors:float]"
-            # "cells": {  # "map[delta_neighbors_store:float]":
-            #     "_type": "map",
-            #     "_value": {
-            #         # "delta store": "float",
-            #         "delta_neighbors_store": "float"
-            #     }
-            # }
         }
 
     def update(self, inputs):
         connections = inputs["connections"]
         cells = inputs["cells"]
+
+        import ipdb; ipdb.set_trace()
 
         cell_updates = {}
         for cell_id, cell in cells.items():
