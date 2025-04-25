@@ -12,6 +12,10 @@
     "float"
   ],
   [
+    "delta_neighbors",
+    "float"
+  ],
+  [
     "neighbor_surface_area",
     {
       "_inherit": "map",
