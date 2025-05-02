@@ -13,7 +13,11 @@ class CellConnector(Step):
         'initial_deltas': {
             '_type': 'list',
             '_element': 'float',
-            '_default': [0, 1]}}
+            '_default': [0, 1]},
+        'initial_notches': {
+            '_type': 'list',
+            '_element': 'float',
+            '_default': [1, 0]}}
 
     def __init__(self, config, core=None):
         super().__init__(config, core)
@@ -60,14 +64,21 @@ class CellConnector(Step):
             cell_id: cells[cell_id]['delta']
             for cell_id in remaining_cells}
 
+        cell_notches = {
+            cell_id: cells[cell_id]['notch']
+            for cell_id in remaining_cells}
+
         for cell_id in new_cell_ids:
             cell_deltas[cell_id] = random.choice(
                 self.config['initial_deltas'])
+            cell_notches[cell_id] = random.choice(
+                self.config['initial_notches'])
 
         cell_updates['_remove'] = list(remove_cell_ids)
         cell_updates['_add'] = {
             cell_id: {
                 'delta': cell_deltas[cell_id],
+                'notch': cell_notches[cell_id],
                 'delta_neighbors': self.calculate_delta_neighbors(
                     cell_deltas, cell_id, connections[cell_id])}
             for cell_id in new_cell_ids}
@@ -77,8 +88,6 @@ class CellConnector(Step):
                 cell_deltas, cell_id, connections[cell_id])
             cell_updates[cell_id] = {
                 'delta_neighbors': delta}
-
-        import ipdb; ipdb.set_trace()
 
         return {
             "cells": cell_updates

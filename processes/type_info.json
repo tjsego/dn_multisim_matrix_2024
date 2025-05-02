@@ -13,7 +13,8 @@
   ],
   [
     "surface_area",
-    "float"
+    {"_type": "float",
+     "_apply": "set"}
   ],
   [
     "neighbor_surface_area",
