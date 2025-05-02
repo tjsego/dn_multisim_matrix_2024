@@ -8,6 +8,10 @@
     "float"
   ],
   [
+    "delta_neighbors",
+    "float"
+  ],
+  [
     "surface_area",
     "float"
   ],
