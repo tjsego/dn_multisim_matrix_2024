@@ -105,31 +105,7 @@ def run_composites(core):
                 "neighbor_surface_areas": {},
                 'emitter': emitter_from_wires({
                     'cells': ['cells'],
-                    'neighborhood_surface_areas': ['neighborhood_surface_areas']}),
-
-
-
-
-                # "emitter": {
-                #     "_type": "step",
-                #     "address": "local:ram-emitter",
-                #     "config": {
-                #         "emit": {
-                #             'neighborhood_surface_areas': 
-                #             'cells': 'map[any]'
-                #             # 'cells': 'map[delta:float|notch:float]'
-                #             # "delta": "delta",
-                #             # "notch": "notch"
-                #         }
-                #     },
-                #     "inputs": {
-                #         'cells': ['cells']
-                #         # # TODO -- make this more general
-                #         # "delta": ["cells", "0", "delta"],
-                #         # "notch": ["cells", "0", "notch"]
-                #     },
-                # }
-            }
+                    'neighborhood_surface_areas': ['neighborhood_surface_areas']})}
 
             composition = {
                 "cells": {
@@ -143,10 +119,9 @@ def run_composites(core):
                                 "delta_neighbors": ["delta_neighbors"]
                             }),
                             "outputs": default("tree[wires]", {
-                                "outputs": {
-                                    "delta": ["delta"],  # this has to be called delta store for the connector to read it
-                                    "notch": ["notch"]
-                            }})
+                                "delta": ["delta"],  # this has to be called delta store for the connector to read it
+                                "notch": ["notch"]
+                            })
                         }
                     },
 
