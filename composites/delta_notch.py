@@ -148,14 +148,14 @@ def run_composites(core):
                 core=core
             )
 
-            import ipdb; ipdb.set_trace()
-
             # run the simulation
             print(f'Running composite with {multicell_address} and {subcell_address}')
             sim.run(interval=interval)
 
             # retrieve the results
             results = gather_emitter_results(sim)
+
+            import ipdb; ipdb.set_trace()
 
             # print the results
             # TODO -- is the emitter not wired to the right location
