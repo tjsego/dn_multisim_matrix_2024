@@ -89,6 +89,14 @@ class VertexPlanarSheet(PlanarSheetSimService):
     def num_cells(self) -> int:
         return len(self._cell_type)
 
+    def cell_spatial_data(self):
+        points = []
+        cell_ids = []
+        for sh in self._cell_type:
+            points.append([v.position.xy().as_list() for v in sh.vertices])
+            cell_ids.append(sh.id)
+        return points, *tf.Universe.dim.xy().as_list(), cell_ids
+
     # PySimService interface
 
     def _run(self) -> None:

@@ -1,0 +1,23 @@
+{
+  "data": {
+    "dpi": {
+      "description": "Output DPI",
+      "type": "number"
+    },
+    "file_extensions": {
+      "description": "Output file extensions (*e.g.*, .png)",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "figure_height": {
+      "description": "Output file height, in inches",
+      "type": "number"
+    },
+    "figure_width": {
+      "description": "Output file width, in inches",
+      "type": "number"
+    }
+  }
+}

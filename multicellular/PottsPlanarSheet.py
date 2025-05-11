@@ -78,6 +78,13 @@ class PottsPlanarSheet(CC3DSimService, PlanarSheetSimService):
         return sim.getPotts()
 
     @staticmethod
+    def _get_cell_field():
+        potts = PottsPlanarSheet._get_potts()
+        if potts is None:
+            return None
+        return potts.getCellFieldG()
+
+    @staticmethod
     def _get_cell_inventory():
         potts = PottsPlanarSheet._get_potts()
         if potts is None:
@@ -88,6 +95,17 @@ class PottsPlanarSheet(CC3DSimService, PlanarSheetSimService):
     def _get_neighbor_tracker_plugin():
         from cc3d.cpp import CompuCell
         return CompuCell.getNeighborTrackerPlugin()
+
+    def cell_spatial_data(self):
+        cell_field = self._get_cell_field()
+        dim = cell_field.getDim()
+        x = np.zeros((dim.x, dim.y), dtype=int)
+        for i in range(dim.x):
+            for j in range(dim.y):
+                cell = cell_field[i, j, 0]
+                if cell is not None:
+                    x[i, j] = cell.id
+        return x, dim.x, dim.y
 
     # PlanarSheetSimService interface
 

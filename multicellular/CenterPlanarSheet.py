@@ -90,6 +90,17 @@ class CenterPlanarSheet(PlanarSheetSimService):
     def num_cells(self) -> int:
         return len(tf.Universe.particles)
 
+    def cell_spatial_data(self):
+        pos_x = []
+        pos_y = []
+        cell_ids = []
+        for ph in tf.Universe.particles:
+            p_pos_x, p_pos_y = ph.position.xy().as_list()
+            pos_x.append(p_pos_x)
+            pos_y.append(p_pos_y)
+            cell_ids.append(ph.id)
+        return pos_x, pos_y, cell_ids, *tf.Universe.dim.xy().as_list(), self._cell_type.radius
+
     # PySimService interface
 
     def _run(self) -> None:
