@@ -8,13 +8,12 @@
     "float"
   ],
   [
-    "delta_neighbors",
+    "surface_area",
     "float"
   ],
   [
-    "surface_area",
-    {"_type": "float",
-     "_apply": "set"}
+    "delta_neighbors",
+    "float"
   ],
   [
     "neighbor_surface_area",
