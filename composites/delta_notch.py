@@ -8,7 +8,23 @@ from process_bigraph.emitter import emitter_from_wires
 from bigraph_schema.registry import deep_merge_copy
 from processes import register_types
 import processes
+import os
 
+
+renderer_registry = {
+    'CenterPlanarProcess': 'MCCenterRenderer2D',
+    'PottsPlanarProcess': 'MCPottsRenderer2D',
+    'VertexPlanarProcess': 'MCVertexRenderer2D'
+}
+
+
+def get_renderer_address(_address: str):
+    domain, mcsim = _address.split(':')
+    return f'{domain}:{renderer_registry[mcsim]}'
+
+
+def render_output_dir(_root_dir: str, _mc_address: str, _sc_address: str):
+    return os.path.join(_root_dir, f'{_mc_address.split(":")[1]}/{_sc_address.split(":")[1]}')
 
 
 def run_composites(core):
@@ -27,7 +43,7 @@ def run_composites(core):
     assert step_size >= dt, 'The time step of the process bigraph engine must be greater than or equal to the time step of tissue forge'
 
     multicellular_startup_settings = {
-        # 'local:PottsPlanarProcess': {},
+        'local:PottsPlanarProcess': {},
         'local:CenterPlanarProcess': {
             'step_size': step_size,
             'dt': dt,
@@ -66,6 +82,9 @@ def run_composites(core):
     }
     subcellular_config = {}
 
+    fig_root_dir = '../_figs'
+    print(os.path.abspath(fig_root_dir))
+
     # go through all the combinations of multicellular and subcellular processes
     for multicell_address, multicell_settings in multicellular_startup_settings.items():
         for subcell_address, subcell_settings in subcellular_startup_settings.items():
@@ -90,6 +109,7 @@ def run_composites(core):
                     'inputs': {},
                     'outputs': {
                         'neighborhood_surface_areas': ['neighborhood_surface_areas'],
+                        'cell_spatial_data': ['cell_spatial_data']
                         # this is a map from each cell to ids of its neighbors and their common surface area
                     }
                 },
@@ -107,6 +127,23 @@ def run_composites(core):
                     },
                     'outputs': {
                         'cells': ['cells']  # this updates the total delta values seen by each cell
+                    }
+                },
+                'renderer': {
+                    '_type': 'step',
+                    'address': get_renderer_address(multicell_address),
+                    'config': {
+                        'render_specs': {
+                            'dpi': 300,
+                            'file_extensions': ['.png'],
+                            'figure_height': 3.0,
+                            'figure_width': 3.0
+                        },
+                        'output_dir': render_output_dir(fig_root_dir, multicell_address, subcell_address)
+                    },
+                    'inputs': {
+                        'cells': ['cells'],
+                        'cell_spatial_data': ['cell_spatial_data']
                     }
                 },
                 'emitter': emitter_from_wires({

@@ -51,3 +51,7 @@ class PlanarSheetSimService(PySimService, abc.ABC):
     @abc.abstractmethod
     def num_cells(self) -> int:
         raise NotImplementedError
+
+    @abc.abstractmethod
+    def cell_spatial_data(self):
+        raise NotImplementedError
