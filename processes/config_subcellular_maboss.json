@@ -4,6 +4,5 @@
     "time_tick": "float",
     "discrete_time": "boolean",
     "seed": "integer"
-  },
-  "service_name": "MaBoSSDeltaNotch"
+  }
 }

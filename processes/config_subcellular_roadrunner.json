@@ -4,6 +4,5 @@
     "num_steps": "integer",
     "stochastic": "boolean",
     "seed": "integer"
-  },
-  "service_name": "RoadRunnerDeltaNotch"
+  }
 }

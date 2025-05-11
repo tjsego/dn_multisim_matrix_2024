@@ -53,16 +53,16 @@ class MaBoSSDeltaNotch(DeltaNotchSimService, MaBoSSSimService):
         ]
 
     def get_delta(self):
-        return self.get_node_state('delta')
+        return float(self.get_node_state('delta'))
 
     def set_delta(self, _val):
-        self.set_node_state('delta', _val)
+        self.set_node_state('delta', bool(_val))
 
     def get_notch(self):
-        return self.get_node_state('notch')
+        return float(self.get_node_state('notch'))
 
     def set_notch(self, _val):
-        self.set_node_state('notch', _val)
+        self.set_node_state('notch', bool(_val))
 
     def set_delta_neighbors(self, _d_avg: float):
         self.set_symbol_table_val('delta_nbs', _d_avg)

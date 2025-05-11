@@ -22,7 +22,7 @@ def run_composites(core):
     cell_radius = 5
     n_initial_cells = num_cells_x * num_cells_y
     step_size = 1.0  # time of one step in process bigraph engine
-    dt = 1.0         # the period of time step according to tissue forge
+    dt = 0.1         # the period of time step according to tissue forge
     interval = 10.   # the total time to run the simulation
     assert step_size >= dt, 'The time step of the process bigraph engine must be greater than or equal to the time step of tissue forge'
 
@@ -74,7 +74,7 @@ def run_composites(core):
             multicell_config_merged = deep_merge_copy(
                 {'simservice_config': multicell_config}, multicell_settings)
             subcellular_config_merged = deep_merge_copy(
-                {'simservice_config': subcellular_config}, subcell_settings)
+                subcellular_config, subcell_settings)
 
             # make the document
             document = {
