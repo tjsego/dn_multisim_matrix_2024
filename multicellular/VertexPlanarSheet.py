@@ -106,13 +106,16 @@ class VertexPlanarSheet(PlanarSheetSimService):
 
         # Initialize the simulation
 
-        min_dim = min(self.num_cells_x, self.num_cells_y) * np.sqrt(3) * self.cell_radius * 2
+        pad_x = 3 / 2 * self.cell_radius * 2
+        pad_y = np.sqrt(3) * self.cell_radius * 2
+        dim_x = 2 * pad_x + (self.num_cells_x - 1 / 2) * self.cell_radius * 3 / 2
+        dim_y = 2 * pad_y + (2 * self.num_cells_y - 1 / 2) * self.cell_radius * np.sqrt(3) / 2
+
+        min_dim = min(dim_x, dim_y)
         min_cells = 3
         len2cells = min_dim / min_cells
 
-        dim = [(self.num_cells_x + 3) * self.cell_radius,
-               (self.num_cells_y + 1) * np.sqrt(3) * self.cell_radius,
-               len2cells]
+        dim = [dim_x, dim_y, min_dim]
 
         tf.init(
             windowless=not self._show,
@@ -128,9 +131,7 @@ class VertexPlanarSheet(PlanarSheetSimService):
 
         # Initialize the population
 
-        start_pos_x = (self.num_cells_x) / 2
-        start_pos_y = (self.num_cells_y - 0.5) * np.sqrt(3) / 2
-        start_pos = tf.Universe.center - tf.FVector3(start_pos_x, start_pos_y, 0) * self.cell_radius
+        start_pos = tf.FVector3([pad_x, pad_y, tf.Universe.center[2]])
         tfvs.create_hex2d_mesh(self._cell_type, start_pos, self.num_cells_x, self.num_cells_y, self.cell_radius)
 
         self._cell_id_map = {}
@@ -145,6 +146,17 @@ class VertexPlanarSheet(PlanarSheetSimService):
         perim_constraint = tfvs.PerimeterConstraint(1.0, tfvs.SurfaceHandle(0).perimeter)
         perim_constraint.thisown = 0
         tfvs.bind.surface(perim_constraint, self._cell_type)
+
+        # 2D simulation
+
+        vtype = tfvs.MeshParticleType_get()
+        vtype.frozen_z = True
+
+        # Add some noise
+
+        rforce = tf.Force.random(1E0, 0.0)
+        rforce.thisown = 0
+        tf.bind.force(rforce, vtype)
 
         if tf.err_occurred():
             print(tf.err_get_all())

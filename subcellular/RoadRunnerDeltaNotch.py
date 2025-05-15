@@ -16,7 +16,7 @@ model_str = """
       </listOfSpecies>
       <listOfParameters>
          <parameter id = "k" value = "2"/>
-         <parameter id = "a" value = "0.01"/>
+         <parameter id = "a" value = "0.1"/>
          <parameter id = "v" value = "1"/>
          <parameter id = "b" value = "100"/>
          <parameter id = "h" value = "2"/>

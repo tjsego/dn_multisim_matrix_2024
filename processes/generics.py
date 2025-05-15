@@ -69,7 +69,9 @@ class DeltaNotchProcess(Process):
         super().__init__(config, core)
 
         self.service = self.service_cls(**self.config)
-        self.service._init()
+        self.service.run()
+        self.service.init()
+        self.service.start()
 
     def inputs(self):
         return deepcopy(input_schema_subcellular)
@@ -78,12 +80,14 @@ class DeltaNotchProcess(Process):
         return deepcopy(output_schema_subcellular)
 
     def update(self, state, interval):
-        delta_neighbors = state['delta_neighbors']
+        self.service.set_delta(state['delta'])
+        self.service.set_notch(state['notch'])
+        self.service.set_delta_neighbors(state['delta_neighbors'])
 
-        self.service.set_delta_neighbors(delta_neighbors)
-        self.service._step()
+        self.service.step()
 
+        # todo: this should implement a set operation but T.J. can't figure out where "_apply": "set" should go
         return {
-            'delta': self.service.get_delta(),
-            'notch': self.service.get_notch()
+            'delta': self.service.get_delta() - state['delta'],
+            'notch': self.service.get_notch() - state['notch']
         }

@@ -1,22 +1,34 @@
 from simservices import DeltaNotchSimService, MaBoSSSimService
 
 bnd_str = """
-node delta 
+node delta
 {
-    logic = NOT notch;
-    rate_up = @logic ? $rate : 0.0;
-    rate_down = @logic ? 0.0 : $rate;
+    logic = !notch && !nicd;
+    rate_up = @logic ? $fast : 0.0;
+    rate_down = @logic ? 0.0 : $fast;
 }
 
-node notch 
+node notch
 {
-    rate_up = $delta_nbs;
-    rate_down = $rate;
+    logic = $delta_nbs > 0.0;
+    rate_up = @logic ? $delta_nbs : 0.0;
+    rate_down = @logic ? 0.0 : $fast;
+}
+
+node nicd
+{
+    logic = notch;
+    rate_up = @logic ? $fast : 0.0;
+    rate_down = @logic ? 0.0 : $fast;
 }
 """
 
 cfg_str = """
-$rate=1.0;
+$fast = 10;
+$delta_nbs = 0;
+delta.istate = 0;
+notch.istate = 0;
+nicd.istate = 0;
 """
 
 DEF_TIME_STEP = 1.0

@@ -1,7 +1,9 @@
 {
   "config_schema": {},
   "input_schema": {
-    "delta_neighbors": "delta_neighbors"
+    "delta_neighbors": "delta_neighbors",
+    "delta": "delta",
+    "notch": "notch"
   },
   "output_schema": {
     "delta": "delta",
