@@ -15,6 +15,7 @@ from .PottsPlanarProcess import PottsPlanarProcess
 from .RoadRunnerDeltaNotchProcess import RoadRunnerDeltaNotchProcess
 from .VertexPlanarProcess import VertexPlanarProcess
 from .cell_connector import CellConnector
+from .MultiCellRenderer import MCCenterRenderer2D, MCPottsRenderer2D, MCVertexRenderer2D
 
 __processes__ = [
     CenterPlanarProcess,
@@ -23,6 +24,9 @@ __processes__ = [
     RoadRunnerDeltaNotchProcess,
     VertexPlanarProcess,
     CellConnector,
+    MCCenterRenderer2D,
+    MCPottsRenderer2D,
+    MCVertexRenderer2D
 ]
 
 
