@@ -110,13 +110,15 @@ class CenterPlanarSheet(PlanarSheetSimService):
 
         # Initialize the simulation
 
-        min_dim = min(self.num_cells_x, self.num_cells_y) * np.sqrt(3) * self.cell_radius * 2
+        pad = 2.0 * self.cell_radius
+
+        dim_x = 2.0 * pad + (self.num_cells_x - 1) * self.cell_radius * 2
+        dim_y = 2.0 * pad + ((self.num_cells_y - 1) * 2 + 1) * 2 * self.cell_radius / np.sqrt(3)
+        min_dim = min(dim_x, dim_y)
         min_cells = 3
         len2cells = min_dim / min_cells
 
-        dim = [(self.num_cells_x + 2) * self.cell_radius,
-               (self.num_cells_y + 1) * np.sqrt(3) * self.cell_radius,
-               len2cells]
+        dim = [dim_x, dim_y, len2cells]
 
         tf.init(windowless=not self._show,
                 dim=dim,
@@ -152,14 +154,11 @@ class CenterPlanarSheet(PlanarSheetSimService):
 
         # Initialize the population
 
-        uc = tf.lattice.hex2d(self._cell_type.radius, self._cell_type)
-        n = [self.num_cells_x, self.num_cells_y, 1]
-        cell_half_size = (uc.a1 + uc.a2 + uc.a3) / 2
-        extents = n[0] * uc.a1 + n[1] * uc.a2 + n[2] * uc.a3
-        offset = tf.FVector3(0.0, 0.0, 0.0)
-        origin = tf.Universe.center + offset - extents / 2 + cell_half_size
-        origin[1] -= np.sqrt(3) / 4 * self._cell_type.radius
-        tf.lattice.create_lattice(uc, n, origin=origin)
+        for i in range(self.num_cells_x):
+            for j in range(self.num_cells_y):
+                pos_x = pad + i * self.cell_radius * 2
+                pos_y = pad + (j * 2 + (i % 2)) * 2 * self.cell_radius / np.sqrt(3)
+                self._cell_type([pos_x, pos_y, tf.Universe.center[2]])
 
         if tf.err_occurred():
             print(tf.err_get_all())
