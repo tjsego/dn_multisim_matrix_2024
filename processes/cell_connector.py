@@ -17,7 +17,7 @@ class CellConnector(Step):
         'initial_notches': {
             '_type': 'list',
             '_element': 'float',
-            '_default': [1, 0]},
+            '_default': [0]},
         'cells_count': 'integer',
         'read_molecules': 'list[string]'}
 
@@ -48,7 +48,7 @@ class CellConnector(Step):
         delta = 0
         for neighbor_id, surface_area in connection.items():
             delta += cell_deltas[neighbor_id] * surface_area
-        return delta
+        return delta / len(connection)
         
 
     def update(self, inputs):

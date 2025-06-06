@@ -1,5 +1,6 @@
 from cc3d import CompuCellSetup
 from cc3d.core import MaBoSSCC3D
+import numpy as np
 from simservice.PySimService import PySimService
 from typing import Optional
 
@@ -28,12 +29,13 @@ class MaBoSSSimService(PySimService):
         pass
 
     def _init(self):
+        seed = self._seed if (self._seed is not None and self._seed >= 0) else int(np.random.randint(0, int(1E6)))
         self._sim = MaBoSSCC3D.maboss_model(bnd_str=self._bnd_str,
                                             cfg_str=self._cfg_str,
                                             time_step=self._time_step,
                                             time_tick=self._time_tick,
                                             discrete_time=self._discrete_time,
-                                            seed=self._seed)
+                                            seed=seed)
         return self._sim is not None
 
     def _start(self):
@@ -148,7 +150,7 @@ class MaBoSSSimService(PySimService):
         return self._get_node_generic('state', _name)
 
     def set_node_state(self, _name: str, _val: bool):
-        self._get_node_generic('state', _name, _val)
+        self._set_node_generic('state', _name, _val)
 
     def get_node_rate_up(self, _name: str):
         return self._get_node_generic('rate_up', _name)

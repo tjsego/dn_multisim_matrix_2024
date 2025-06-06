@@ -1,20 +1,31 @@
 [
   [
     "delta",
-    "float"
+    {
+      "_type": "float",
+      "_apply": "set"
+    }
   ],
   [
     "notch",
-    "float"
+    {
+      "_type": "float",
+      "_apply": "set"
+    }
   ],
   [
     "delta_neighbors",
-    "float"
+    {
+      "_type": "float",
+      "_apply": "set"
+    }
   ],
   [
     "surface_area",
-    {"_type": "float",
-     "_apply": "set"}
+    {
+      "_type": "float",
+      "_apply": "set"
+    }
   ],
   [
     "neighbor_surface_area",

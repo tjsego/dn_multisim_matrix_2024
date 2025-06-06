@@ -33,13 +33,13 @@ def run_composites(core):
     # subcellular_processes = core.query('subcellular')  # TODO -- how do we get the list of possible subcellular processes?
     # multicellular_processes = core.query('multicellular')
     # TODO -- consider making subcellular simulators typical processes; startup for potentially 100s of services will be expensive without adding much value
-    num_cells_x = 2 #4
-    num_cells_y = 2 #4
+    num_cells_x = 20 #4
+    num_cells_y = 20 #4
     cell_radius = 5
     n_initial_cells = num_cells_x * num_cells_y
     step_size = 1.0  # time of one step in process bigraph engine
-    dt = 1.0         # the period of time step according to tissue forge
-    interval = 10.   # the total time to run the simulation
+    dt = 0.5         # the period of time step according to tissue forge
+    interval = 100.   # the total time to run the simulation
     assert step_size >= dt, 'The time step of the process bigraph engine must be greater than or equal to the time step of tissue forge'
 
     multicellular_startup_settings = {
@@ -61,13 +61,13 @@ def run_composites(core):
     }
     subcellular_startup_settings = {
         'local:MaBoSSDeltaNotchProcess': {
-            'time_step': dt,
-            'time_tick': step_size,
-            'discrete_time': True,
-            'seed': 0
+            'time_step': dt * 1E0,
+            'time_tick': dt * 1E0,
+            'discrete_time': False,
+            'seed': -1
         },
         'local:RoadRunnerDeltaNotchProcess': {
-            'step_size': dt,
+            'step_size': dt * 5,
             'num_steps': int(step_size/dt),
             'stochastic': False,
             'seed': 0
@@ -93,7 +93,7 @@ def run_composites(core):
             multicell_config_merged = deep_merge_copy(
                 {'simservice_config': multicell_config}, multicell_settings)
             subcellular_config_merged = deep_merge_copy(
-                {'simservice_config': subcellular_config}, subcell_settings)
+                subcellular_config, subcell_settings)
 
             # make the document
             document = {
@@ -160,7 +160,9 @@ def run_composites(core):
                             'address': default('string', f'{subcell_address}'),
                             'config': default('quote', subcellular_config_merged),
                             'inputs': default('tree[wires]', {
-                                'delta_neighbors': ['delta_neighbors']
+                                'delta_neighbors': ['delta_neighbors'],
+                                'delta': ['delta'],
+                                'notch': ['notch']
                             }),
                             'outputs': default('tree[wires]', {
                                 'delta': ['delta'],  # this has to be called delta store for the connector to read it
@@ -174,7 +176,7 @@ def run_composites(core):
 
             # TODO -- set initial state
 
-            import ipdb; ipdb.set_trace()
+            # import ipdb; ipdb.set_trace()
 
             # make the composite
             print(f'Building composite with {multicell_address} and {subcell_address}')

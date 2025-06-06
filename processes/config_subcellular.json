@@ -1,16 +1,9 @@
 {
   "config_schema": {},
-  "access_methods": {
-    "inputs": {
-      "delta_neighbors": "set_delta_neighbors"
-    },
-    "outputs": {
-      "delta": "get_delta",
-      "notch": "get_notch"
-    }
-  },
   "input_schema": {
-    "delta_neighbors": "delta_neighbors"
+    "delta_neighbors": "delta_neighbors",
+    "delta": "delta",
+    "notch": "notch"
   },
   "output_schema": {
     "delta": "delta",

@@ -137,20 +137,20 @@ class CenterPlanarSheet(PlanarSheetSimService):
 
         # Add potentials
 
-        pot_contact = tf.Potential.morse(d=1E-5,
-                                         a=5,
+        pot_contact = tf.Potential.morse(d=1E-4,
+                                         a=3,
                                          r0=2 * self._cell_type.radius,
-                                         min=0,
+                                         min=1E-6,
                                          max=4 * self._cell_type.radius,
                                          shifted=False)
         pot_contact.thisown = 0
-        # tf.bind.types(pot_contact, self._cell_type, self._cell_type)
+        tf.bind.types(pot_contact, self._cell_type, self._cell_type)
 
         # Add some noise
 
-        rforce = tf.Force.random(1E-3, 0.0)
+        rforce = tf.Force.random(1E-2, 0.0)
         rforce.thisown = 0
-        # tf.bind.force(rforce, self._cell_type)
+        tf.bind.force(rforce, self._cell_type)
 
         # Initialize the population
 
