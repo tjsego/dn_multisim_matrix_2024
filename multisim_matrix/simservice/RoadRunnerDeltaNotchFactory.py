@@ -1,7 +1,7 @@
 from simservice.managers import ServiceManagerLocal
 from simservice.service_wraps import TypeProcessWrap
 from simservice.service_factory import process_factory
-from .RoadRunnerDeltaNotch import RoadRunnerDeltaNotch
+from multisim_matrix.simservice.RoadRunnerDeltaNotch import RoadRunnerDeltaNotch
 
 SERVICE_NAME = 'RoadRunnerDeltaNotch'
 

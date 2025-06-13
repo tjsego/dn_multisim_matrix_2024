@@ -1,5 +1,5 @@
 import numpy as np
-from simservices.PlanarSheetSimService import PlanarSheetSimService
+from multisim_matrix.simservice.PlanarSheetSimService import PlanarSheetSimService
 from typing import Dict
 
 from cc3d.core.simservice.CC3DSimService import CC3DSimService

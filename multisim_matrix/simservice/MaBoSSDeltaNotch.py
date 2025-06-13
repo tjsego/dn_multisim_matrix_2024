@@ -1,4 +1,4 @@
-from simservices import DeltaNotchSimService, MaBoSSSimService
+from multisim_matrix.simservice import DeltaNotchSimService, MaBoSSSimService
 
 bnd_str = """
 node delta

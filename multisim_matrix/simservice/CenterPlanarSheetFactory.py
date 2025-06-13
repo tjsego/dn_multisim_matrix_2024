@@ -1,7 +1,7 @@
 from simservice.managers import ServiceManagerLocal
 from simservice.service_wraps import TypeProcessWrap
 from simservice.service_factory import process_factory
-from .CenterPlanarSheet import CenterPlanarSheet
+from multisim_matrix.simservice.CenterPlanarSheet import CenterPlanarSheet
 
 SERVICE_NAME = 'CenterPlanarSheet'
 

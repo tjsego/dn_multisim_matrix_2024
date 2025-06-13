@@ -2,20 +2,20 @@ import json
 import os
 
 # DO NOT REMOVE THESE SEEMINGLY UNUSED IMPORTS!
-import multicellular.CenterPlanarSheetFactory
-import multicellular.VertexPlanarSheetFactory
-import multicellular.PottsPlanarSheetFactory
-import subcellular.MaBoSSDeltaNotchFactory
-import subcellular.RoadRunnerDeltaNotchFactory
+import multisim_matrix.simservice.CenterPlanarSheetFactory
+import multisim_matrix.simservice.VertexPlanarSheetFactory
+import multisim_matrix.simservice.PottsPlanarSheetFactory
+import multisim_matrix.simservice.MaBoSSDeltaNotchFactory
+import multisim_matrix.simservice.RoadRunnerDeltaNotchFactory
 
 
-from .CenterPlanarProcess import CenterPlanarProcess
-from .MaBoSSDeltaNotchProcess import MaBoSSDeltaNotchProcess
-from .PottsPlanarProcess import PottsPlanarProcess
-from .RoadRunnerDeltaNotchProcess import RoadRunnerDeltaNotchProcess
-from .VertexPlanarProcess import VertexPlanarProcess
-from .cell_connector import CellConnector
-from .MultiCellRenderer import MCCenterRenderer2D, MCPottsRenderer2D, MCVertexRenderer2D
+from multisim_matrix.vivarium.CenterPlanarProcess import CenterPlanarProcess
+from multisim_matrix.vivarium.MaBoSSDeltaNotchProcess import MaBoSSDeltaNotchProcess
+from multisim_matrix.vivarium.PottsPlanarProcess import PottsPlanarProcess
+from multisim_matrix.vivarium.RoadRunnerDeltaNotchProcess import RoadRunnerDeltaNotchProcess
+from multisim_matrix.vivarium.VertexPlanarProcess import VertexPlanarProcess
+from multisim_matrix.vivarium.cell_connector import CellConnector
+from multisim_matrix.vivarium.MultiCellRenderer import MCCenterRenderer2D, MCPottsRenderer2D, MCVertexRenderer2D
 
 __processes__ = [
     CenterPlanarProcess,
@@ -36,7 +36,7 @@ def register_processes(core):
 
 
 def register_types(core):
-    with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'type_info.json'), 'r') as f:
+    with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'schemas', 'type_info.json'), 'r') as f:
         for d in json.load(f):
             core.register(*d)
 

@@ -1,14 +1,14 @@
 import antimony
-from .DeltaNotchSimService import DeltaNotchSimService
-from .MaBoSSSimService import MaBoSSSimService
-from .PlanarSheetSimService import PlanarSheetSimService
-from .RoadRunnerSimService import RoadRunnerSimService
-from .CenterPlanarSheet import CenterPlanarSheet
-from .PottsPlanarSheet import PottsPlanarSheet
-from .VertexPlanarSheet import VertexPlanarSheet
+from multisim_matrix.simservice.DeltaNotchSimService import DeltaNotchSimService
+from multisim_matrix.simservice.MaBoSSSimService import MaBoSSSimService
+from multisim_matrix.simservice.PlanarSheetSimService import PlanarSheetSimService
+from multisim_matrix.simservice.RoadRunnerSimService import RoadRunnerSimService
+from multisim_matrix.simservice.CenterPlanarSheet import CenterPlanarSheet
+from multisim_matrix.simservice.PottsPlanarSheet import PottsPlanarSheet
+from multisim_matrix.simservice.VertexPlanarSheet import VertexPlanarSheet
 
-from .MaBoSSDeltaNotch import MaBoSSDeltaNotch
-from .RoadRunnerDeltaNotch import RoadRunnerDeltaNotch
+from multisim_matrix.simservice.MaBoSSDeltaNotch import MaBoSSDeltaNotch
+from multisim_matrix.simservice.RoadRunnerDeltaNotch import RoadRunnerDeltaNotch
 
 from simservice.managers import ServiceManagerLocal
 from simservice.service_wraps import TypeProcessWrap

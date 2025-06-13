@@ -1,6 +1,8 @@
-from .generics import *
 
-with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config_planar_center.json'), 'r') as f:
+
+from multisim_matrix.vivarium.generics import *
+
+with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'schemas', 'config_planar_center.json'), 'r') as f:
     config_data = json.load(f)
 
 config_schema = deepcopy(config_schema_multicellular)
