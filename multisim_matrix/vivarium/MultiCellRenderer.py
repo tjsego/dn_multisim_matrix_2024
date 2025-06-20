@@ -1,3 +1,6 @@
+
+
+
 import json
 from matplotlib import pyplot as plt
 from matplotlib import patches as mpatches
@@ -19,8 +22,13 @@ SUBDIRS_RENDER = [
     SUBDIR_DN
 ]
 
-render_schema_fp = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                                'simservices', 'schema_render.json')
+render_schema_fp = os.path.join(
+    os.path.dirname(
+        os.path.dirname(
+            os.path.abspath(__file__))),
+    'simservice',
+    'schema_render.json')
+
 with open(render_schema_fp, 'r') as f:
     render_schema = json.load(f)
 

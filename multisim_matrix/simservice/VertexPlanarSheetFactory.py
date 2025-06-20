@@ -1,7 +1,7 @@
 from simservice.managers import ServiceManagerLocal
 from simservice.service_wraps import TypeProcessWrap
 from simservice.service_factory import process_factory
-from .VertexPlanarSheet import VertexPlanarSheet
+from multisim_matrix.simservice.VertexPlanarSheet import VertexPlanarSheet
 
 SERVICE_NAME = 'VertexPlanarSheet'
 

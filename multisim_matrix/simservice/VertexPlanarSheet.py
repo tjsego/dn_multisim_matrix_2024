@@ -1,6 +1,6 @@
 import numpy as np
 from simservice.PySimService import PySimService
-from simservices.PlanarSheetSimService import PlanarSheetSimService
+from multisim_matrix.simservice.PlanarSheetSimService import PlanarSheetSimService
 import tissue_forge as tf
 from tissue_forge.models.vertex import solver as tfvs
 from typing import Dict, Optional

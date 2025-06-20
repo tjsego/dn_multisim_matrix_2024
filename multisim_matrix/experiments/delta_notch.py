@@ -6,8 +6,8 @@ TODO -- need to pass in ids for the cells so that we can synchronize.
 from process_bigraph import ProcessTypes, Composite, default, gather_emitter_results
 from process_bigraph.emitter import emitter_from_wires
 from bigraph_schema.registry import deep_merge_copy
-from processes import register_types
-import processes
+
+from multisim_matrix import register_processes, register_types
 import os
 
 

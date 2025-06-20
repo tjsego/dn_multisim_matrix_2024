@@ -3,15 +3,15 @@ import json
 from process_bigraph import deep_merge
 import os
 from process_bigraph import Process
-from simservices.DeltaNotchSimService import DeltaNotchSimService
+from multisim_matrix.simservice.DeltaNotchSimService import DeltaNotchSimService
 from vivarium_simservice.processes.simservice_process import SimServiceProcess
 from typing import Type
 
 _this_dir = os.path.dirname(os.path.abspath(__file__))
 
-with open(os.path.join(_this_dir, 'config_planar.json'), 'r') as f:
+with open(os.path.join(_this_dir, 'schemas', 'config_planar.json'), 'r') as f:
     config_data_multicellular = json.load(f)
-with open(os.path.join(_this_dir, 'config_subcellular.json'), 'r') as f:
+with open(os.path.join(_this_dir, 'schemas', 'config_subcellular.json'), 'r') as f:
     config_data_subcellular = json.load(f)
 
 config_schema_multicellular = config_data_multicellular['config_schema']
