@@ -55,3 +55,12 @@ class PlanarSheetSimService(PySimService, abc.ABC):
     @abc.abstractmethod
     def cell_spatial_data(self):
         raise NotImplementedError
+
+    def cell_volumes(self) -> Dict[int, float]:
+        raise NotImplementedError
+
+    def set_cell_volume_targets(self, _targets: Dict[int, float]) -> None:
+        raise NotImplementedError
+
+    def divide_cells(self, _ids: List[int]) -> Dict[int, int]:
+        raise NotImplementedError

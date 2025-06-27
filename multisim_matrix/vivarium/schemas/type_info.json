@@ -21,10 +21,32 @@
     }
   ],
   [
+    "volume",
+    {
+      "_type": "float",
+      "_apply": "set"
+    }
+  ],
+  [
+    "volume_constraint",
+    {
+      "_type": "float",
+      "_apply": "set"
+    }
+  ],
+  [
     "surface_area",
     {
       "_type": "float",
       "_apply": "set"
+    }
+  ],
+  [
+    "cell_volumes",
+    {
+      "_inherit": "map",
+      "_value": "volume",
+      "_description": "Map of volume for all the cells"
     }
   ],
   [

@@ -1,4 +1,18 @@
 {
   "config_schema": {},
-  "service_name": "PottsPlanarSheet"
+  "service_name": "PottsPlanarSheet",
+  "access_methods": {
+    "inputs": {
+      "set_cell_area_targets": "set_cell_volume_targets"
+    },
+    "outputs": {
+      "cell_areas": "cell_volumes"
+    }
+  },
+  "input_schema": {
+    "set_cell_area_targets": "cell_volumes"
+  },
+  "output_schema": {
+    "cell_areas": "cell_volumes"
+  }
 }

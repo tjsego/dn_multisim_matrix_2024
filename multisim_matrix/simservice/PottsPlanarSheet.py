@@ -1,6 +1,6 @@
 import numpy as np
 from multisim_matrix.simservice.PlanarSheetSimService import PlanarSheetSimService
-from typing import Dict
+from typing import Dict, List
 
 from cc3d.core.simservice.CC3DSimService import CC3DSimService
 from cc3d.core import PyCoreSpecs as pcs
@@ -63,6 +63,17 @@ class PottsPlanarSheet(CC3DSimService, PlanarSheetSimService):
 
         self.register_specs(core_specs(num_cells_x, num_cells_y, cell_radius))
 
+        from cc3d.cpp import CompuCell
+        self.register_steppable(CompuCell.MitosisSteppable)
+        self.mitosis_steppable = None
+
+    def run(self):
+        super().run()
+
+        from cc3d import CompuCellSetup
+        steppable_registry = CompuCellSetup.persistent_globals.steppable_registry
+        self.mitosis_steppable = steppable_registry.getSteppablesByClassName('MitosisSteppable')[0]
+
     @staticmethod
     def _get_simulator():
         from cc3d.CompuCellSetup import persistent_globals as pg
@@ -95,6 +106,13 @@ class PottsPlanarSheet(CC3DSimService, PlanarSheetSimService):
     def _get_neighbor_tracker_plugin():
         from cc3d.cpp import CompuCell
         return CompuCell.getNeighborTrackerPlugin()
+
+    @staticmethod
+    def _get_cell_by_id(_id: int):
+        cinv = PottsPlanarSheet._get_cell_inventory()
+        if cinv is None:
+            return None
+        return cinv.attemptFetchingCellById(_id)
 
     def cell_spatial_data(self):
         cell_field = self._get_cell_field()
@@ -144,7 +162,7 @@ class PottsPlanarSheet(CC3DSimService, PlanarSheetSimService):
         if neighbor_tracker_plugin is None:
             return result
 
-        cell = cinv.attemptFetchingCellById(_cell_id)
+        cell = self._get_cell_by_id(_cell_id)
         if cell is None:
             return result
 
@@ -167,6 +185,31 @@ class PottsPlanarSheet(CC3DSimService, PlanarSheetSimService):
         if potts is None:
             return 0
         return potts.getNumCells()
+
+    def cell_volumes(self) -> Dict[int, float]:
+        result = {}
+        cinv = PottsPlanarSheet._get_cell_inventory()
+        if cinv is None:
+            return result
+        for cell in CellList(cinv):
+            result[cell.id - 1] = float(cell.volume)
+        return result
+
+    def set_cell_volume_targets(self, _targets: Dict[int, float]) -> None:
+        for cell_id, cell_volume in _targets.items():
+            cell = self._get_cell_by_id(cell_id + 1)
+            if cell is not None:
+                cell.targetVolume = cell_volume
+
+    def divide_cells(self, _ids: List[int]) -> Dict[int, int]:
+        result = {}
+        for cell_id in _ids:
+            cell = self._get_cell_by_id(cell_id + 1)
+            if cell is None:
+                continue
+            self.mitosis_steppable.doDirectionalMitosisRandomOrientation(cell)
+            result[cell.id - 1] = self.mitosis_steppable.childCell - 1
+        return result
 
 
 def test():

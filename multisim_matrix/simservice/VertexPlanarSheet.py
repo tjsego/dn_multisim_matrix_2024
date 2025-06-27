@@ -3,7 +3,7 @@ from simservice.PySimService import PySimService
 from multisim_matrix.simservice.PlanarSheetSimService import PlanarSheetSimService
 import tissue_forge as tf
 from tissue_forge.models.vertex import solver as tfvs
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 DEF_STEP_SIZE = 1.0
 DEF_DT = 0.01
@@ -33,6 +33,10 @@ class VertexPlanarSheet(PlanarSheetSimService):
         self._cell_type: Optional[tfvs.SurfaceType] = None
         self._cell_id_map: Optional[Dict[int, int]] = None
         self._cell_id_map_inv: Optional[Dict[int, int]] = None
+
+        self._init_area_constraint = None
+        self._init_perimeter_constraint = None
+        # todo: refine how constraints are defined
 
     # PlanarSheetSimService interface
 
@@ -79,6 +83,31 @@ class VertexPlanarSheet(PlanarSheetSimService):
                     result[s.id] = dist
         return result
 
+    def _process_new_cell(self, _sh: tfvs.SurfaceHandle):
+        if self._cell_id_map is None:
+            self._cell_id_map = {}
+        if self._cell_id_map_inv is None:
+            self._cell_id_map_inv = {}
+
+        new_id = len(self._cell_type)
+        self._cell_id_map[new_id] = _sh.id
+        self._cell_id_map_inv[_sh.id] = new_id
+
+        if self._init_area_constraint is None:
+            self._init_area_constraint = _sh.area
+        if self._init_perimeter_constraint is None:
+            self._init_perimeter_constraint = _sh.perimeter
+
+        area_constraint = tfvs.SurfaceAreaConstraint(0.1, self._init_area_constraint)
+        area_constraint.thisown = 0
+        tfvs.bind.surface(area_constraint, _sh)
+
+        perim_constraint = tfvs.PerimeterConstraint(1.0, self._init_perimeter_constraint)
+        perim_constraint.thisown = 0
+        tfvs.bind.surface(perim_constraint, _sh)
+
+        return new_id
+
     def neighbor_surface_areas(self) -> Dict[int, Dict[int, float]]:
         result = {}
         for sh in self._cell_type:
@@ -96,6 +125,30 @@ class VertexPlanarSheet(PlanarSheetSimService):
             points.append([v.position.xy().as_list() for v in sh.vertices])
             cell_ids.append(sh.id)
         return points, *tf.Universe.dim.xy().as_list(), cell_ids
+
+    def cell_volumes(self) -> Dict[int, float]:
+        result = {}
+        for sh in self._cell_type:
+            cell_id = self._cell_id_map_inv[sh.id]
+            result[cell_id] = sh.area
+        return result
+
+    def set_cell_volume_targets(self, _targets: Dict[int, float]) -> None:
+        for cell_id, cell_area in _targets.items():
+            sh_id = self._cell_id_map[cell_id]
+            sh = tfvs.SurfaceHandle(sh_id)
+            sac: tfvs.SurfaceAreaConstraint = sh.surface_area_constraints[0]
+            sac.constr = cell_area
+
+    def divide_cells(self, _ids: List[int]) -> Dict[int, int]:
+        result = {}
+        for cell_id in _ids:
+            sh_id = self._cell_id_map[cell_id]
+            sh = tfvs.SurfaceHandle(sh_id)
+            ang = np.random.random() * 2 * np.pi
+            new_sh = sh.split(sh.centroid, tf.FVector3(np.cos(ang), np.sin(ang), 0.0))
+            result[cell_id] = self._process_new_cell(new_sh)
+        return result
 
     # PySimService interface
 
@@ -134,18 +187,8 @@ class VertexPlanarSheet(PlanarSheetSimService):
         start_pos = tf.FVector3([pad_x, pad_y, tf.Universe.center[2]])
         tfvs.create_hex2d_mesh(self._cell_type, start_pos, self.num_cells_x, self.num_cells_y, self.cell_radius)
 
-        self._cell_id_map = {}
-        self._cell_id_map_inv = {}
-        for i, sh in enumerate(self._cell_type):
-            self._cell_id_map[i] = sh.id
-            self._cell_id_map_inv[sh.id] = i
-
-        area_constraint = tfvs.SurfaceAreaConstraint(0.1, tfvs.SurfaceHandle(0).area)
-        area_constraint.thisown = 0
-        tfvs.bind.surface(area_constraint, self._cell_type)
-        perim_constraint = tfvs.PerimeterConstraint(1.0, tfvs.SurfaceHandle(0).perimeter)
-        perim_constraint.thisown = 0
-        tfvs.bind.surface(perim_constraint, self._cell_type)
+        for sh in self._cell_type:
+            self._process_new_cell(sh)
 
         # 2D simulation
 
